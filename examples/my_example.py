@@ -4,25 +4,28 @@ from pyNN.utility.plotting import Figure, Panel
 import matplotlib.pyplot as plt
 
 # import models
-from python_models8.neuron.plasticity.stdp.timing_dependence\
-    .my_timing_dependence import (
-        MyTimingDependence)
-from python_models8.neuron.plasticity.stdp.weight_dependence\
-    .my_weight_dependence import (
-        MyWeightDependence)
-from python_models8.neuron.builds.my_model_curr_exp import MyModelCurrExp
-from python_models8.neuron.builds.my_full_neuron import MyFullNeuron
-from python_models8.neuron.builds.my_if_curr_exp_sEMD import MyIFCurrExpSEMD
-from python_models8.neuron.builds.my_model_curr_exp_my_input_type import (
-    MyModelCurrExpMyInputType)
-from python_models8.neuron.builds.my_model_curr_my_synapse_type import (
-    MyModelCurrMySynapseType)
-from python_models8.neuron.builds.my_model_curr_exp_my_additional_input \
-    import (
-        MyModelCurrExpMyAdditionalInput)
-from python_models8.neuron.builds.my_model_curr_exp_my_threshold import (
-    MyModelCurrExpMyThreshold)
 
+from python_models8.neuron.builds.my_full_neuron import MyFullNeuron
+from python_models8.neuron.builds.iaf_psc_exp_nestml import iaf_psc_exp_nestml
+
+
+# iaf_psc_exp default values
+r = 0
+E_L = -0.07
+V_m = E_L
+I_kernel_exc__X__exc_spikes = 0
+I_kernel_inh__X__inh_spikes = 0
+C_m = 0.00000025
+tau_m = 0.01
+tau_syn_inh = 0.002
+tau_syn_exc = 0.002
+t_ref = 0.002
+
+V_reset = -0.07
+V_th = -0.055
+I_e = 0
+exc_spikes = 0
+inh_spikes = 0
 
 # Set the run time of the execution
 run_time = 1000
@@ -48,82 +51,6 @@ spikeArray = {"spike_times": spike_times}
 input_pop = p.Population(
     n_neurons, p.SpikeSourceArray(**spikeArray), label="input")
 
-my_model_pop = p.Population(
-    1, MyModelCurrExp(my_neuron_parameter=-70.0, i_offset=i_offset),
-    label="my_model_pop")
-p.Projection(
-    input_pop, my_model_pop, p.AllToAllConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-
-myModelCurrExpMyInputTypeParams = {
-    "my_input_parameter": 1.0,
-    "my_multiplicator": 1.0
-}
-my_model_my_input_type_pop = p.Population(
-    n_neurons, MyModelCurrExpMyInputType(
-        my_input_parameter=1.0, my_multiplicator=1.0),
-    label="my_model_my_input_type_pop")
-p.Projection(
-    input_pop, my_model_my_input_type_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-
-my_model_my_synapse_type_pop = p.Population(
-    n_neurons, MyModelCurrMySynapseType(
-        my_neuron_parameter=-70.0, i_offset=i_offset,
-        my_ex_synapse_parameter=2.0),
-    label="my_model_my_synapse_type_pop")
-p.Projection(
-    input_pop, my_model_my_synapse_type_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-
-my_model_my_additional_input_pop = p.Population(
-    n_neurons, MyModelCurrExpMyAdditionalInput(
-        my_neuron_parameter=-70.0, i_offset=i_offset,
-        my_additional_input_parameter=0.05),
-    label="my_model_my_additional_input_pop")
-p.Projection(
-    input_pop, my_model_my_additional_input_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-
-my_model_my_threshold_pop = p.Population(
-    n_neurons, MyModelCurrExpMyThreshold(
-        my_neuron_parameter=-70.0, i_offset=i_offset, threshold_value=-10.0,
-        my_threshold_parameter=0.4),
-    label="my_model_my_threshold_pop")
-p.Projection(
-    input_pop, my_model_my_threshold_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-
-my_model_stdp_pop = p.Population(
-    n_neurons, MyModelCurrExp(i_offset=i_offset), label="my_model_pop")
-stdp = p.STDPMechanism(
-    timing_dependence=MyTimingDependence(
-        my_potentiation_parameter=2.0,
-        my_depression_parameter=0.1),
-    weight_dependence=MyWeightDependence(
-        w_min=0.0, w_max=10.0, my_weight_parameter=0.5))
-p.Projection(
-    input_pop, my_model_stdp_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=weight))
-stdp_connection = p.Projection(
-    input_pop, my_model_stdp_pop,
-    p.OneToOneConnector(),
-    synapse_type=stdp)
-
-my_if_curr_exp_semd_pop = p.Population(
-    n_neurons, MyIFCurrExpSEMD(
-        my_multiplicator=0.0, my_inh_input_previous=0.0),
-    label="my_if_curr_exp_semd_pop")
-p.Projection(
-    input_pop, my_if_curr_exp_semd_pop,
-    p.OneToOneConnector(), receptor_type='excitatory',
-    synapse_type=p.StaticSynapse(weight=5.0))
-
 my_full_neuron_pop = p.Population(
     n_neurons, MyFullNeuron(), label="my_full_neuron_pop")
 p.Projection(
@@ -131,59 +58,37 @@ p.Projection(
     p.OneToOneConnector(), receptor_type='excitatory',
     synapse_type=p.StaticSynapse(weight=weight))
 
-my_model_pop.record(['v'])
-my_model_my_input_type_pop.record(['v'])
-my_model_my_synapse_type_pop.record(['v'])
-my_model_my_additional_input_pop.record(['v'])
-my_model_my_threshold_pop.record(['v'])
-my_if_curr_exp_semd_pop.record(['v'])
+iaf_psc_exp_pop = p.Population(
+    n_neurons, iaf_psc_exp_nestml(r, V_m, I_kernel_exc__X__exc_spikes, I_kernel_inh__X__inh_spikes, C_m, tau_m, tau_syn_inh, tau_syn_exc, t_ref, E_L, V_reset, V_th, I_e, exc_spikes, inh_spikes), label="iaf_psc_exp_pop")
+p.Projection(
+    input_pop, iaf_psc_exp_pop,
+    p.OneToOneConnector(), receptor_type='exc_spikes',
+    synapse_type=p.StaticSynapse(weight=weight))
+
 my_full_neuron_pop.record(['v'])
+iaf_psc_exp_pop.record(['V_m'])
 
 p.run(run_time)
 
-print(stdp_connection.get('weight', 'list'))
-
 # get v for each example
-v_my_model_pop = my_model_pop.get_data('v')
-v_my_model_my_input_type_pop = my_model_my_input_type_pop.get_data('v')
-v_my_model_my_synapse_type_pop = my_model_my_synapse_type_pop.get_data('v')
-v_my_model_my_additional_input_pop = my_model_my_additional_input_pop.get_data(
-    'v')
-v_my_model_my_threshold_pop = my_model_my_threshold_pop.get_data('v')
-v_my_if_curr_exp_semd_pop = my_if_curr_exp_semd_pop.get_data('v')
 v_my_full_neuron_pop = my_full_neuron_pop.get_data('v')
+v_iaf_psc_exp_pop = iaf_psc_exp_pop.get_data('V_m')
 
 Figure(
     # pylint: disable=no-member
     # membrane potentials for each example
-    Panel(v_my_model_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_model_pop.label], yticks=True, xlim=(0, run_time)),
-    Panel(v_my_model_my_input_type_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_model_my_input_type_pop.label],
-          yticks=True, xlim=(0, run_time)),
-    Panel(v_my_model_my_synapse_type_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_model_my_synapse_type_pop.label],
-          yticks=True, xlim=(0, run_time)),
-    Panel(v_my_model_my_additional_input_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_model_my_additional_input_pop.label],
-          yticks=True, xlim=(0, run_time)),
-    Panel(v_my_model_my_threshold_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_model_my_threshold_pop.label],
-          yticks=True, xlim=(0, run_time)),
-    Panel(v_my_if_curr_exp_semd_pop.segments[0].filter(name='v')[0],
-          ylabel="Membrane potential (mV)",
-          data_labels=[my_if_curr_exp_semd_pop.label],
-          yticks=True, xlim=(0, run_time)),
     Panel(v_my_full_neuron_pop.segments[0].filter(name='v')[0],
           xlabel="Time (ms)",
           ylabel="Membrane potential (mV)",
           data_labels=[my_full_neuron_pop.label],
           yticks=True, xlim=(0, run_time), xticks=True),
+
+    Panel(v_iaf_psc_exp_pop.segments[0].filter(name='V_m')[0],
+          xlabel="Time (ms)",
+          ylabel="Membrane potential (mV)",
+          data_labels=[iaf_psc_exp_pop.label],
+          yticks=True, xlim=(0, run_time), xticks=True),
+
     title="Simple my model examples",
     annotations="Simulated with {}".format(p.name())
 )
