@@ -18,7 +18,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 #
-#  Generated from NESTML at time: 2023-04-13 08:44:02.151455
+#  Generated from NESTML at time: 2023-04-20 14:18:51.159530
 
 from spynnaker.pyNN.models.neuron import AbstractPyNNNeuronModel
 from spynnaker.pyNN.models.defaults import default_parameters
@@ -29,28 +29,28 @@ import numpy as np
 class iaf_psc_exp_nestml(AbstractPyNNNeuronModel):
 
     def __init__(self,
+#TODO: 'V_m' can't be initialized with E_L
 # XXX: need to print default values here?
-                 r,
-                 V_m,
-                 I_kernel_exc__X__exc_spikes,
-                 I_kernel_inh__X__inh_spikes,
-                 C_m,
-                 tau_m,
-                 tau_syn_inh,
-                 tau_syn_exc,
-                 t_ref,
-                 E_L,
-                 V_reset,
-                 V_th,
-                 I_e,
-                 exc_spikes,
-                 inh_spikes,
+                 r=0,
+                 V_m=None,
+                 I_kernel_exc__X__exc_spikes=0,
+                 I_kernel_inh__X__inh_spikes=0,
+                 C_m=None,
+                 tau_m=None,
+                 tau_syn_inh=None,
+                 tau_syn_exc=None,
+                 t_ref=None,
+                 E_L=None,
+                 V_reset=None,
+                 V_th=None,
+                 I_e=None,
+                 exc_spikes=None,
+                 inh_spikes=None,
                 ):
 
-        #TODO: correct timestep
-        _timestep = 0.001
         # compute propagators and other internal parameters
-        RefractoryCounts = int(np.ceil(t_ref/ _timestep))  # type: integer
+        _timestep=0.001
+        RefractoryCounts = int(np.ceil(t_ref/_timestep))  # type: integer
         __h = _timestep  # type: ms
         __P__V_m__V_m = np.exp((-__h) / tau_m)  # type: real
         __P__V_m__I_kernel_exc__X__exc_spikes = tau_m * tau_syn_exc * ((-np.exp(__h / tau_m)) + np.exp(__h / tau_syn_exc)) * np.exp((-__h) * (tau_m + tau_syn_exc) / (tau_m * tau_syn_exc)) / (C_m * (tau_m - tau_syn_exc))  # type: real
