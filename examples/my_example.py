@@ -59,20 +59,20 @@ p.Projection(
     synapse_type=p.StaticSynapse(weight=weight))
 
 iaf_psc_exp_pop = p.Population(
-    n_neurons, iaf_psc_exp_nestml(r, V_m, I_kernel_exc__X__exc_spikes, I_kernel_inh__X__inh_spikes, C_m, tau_m, tau_syn_inh, tau_syn_exc, t_ref, E_L, V_reset, V_th, I_e, exc_spikes, inh_spikes), label="iaf_psc_exp_pop")
+    n_neurons, iaf_psc_exp_nestml(), label="iaf_psc_exp_pop")
 p.Projection(
     input_pop, iaf_psc_exp_pop,
     p.OneToOneConnector(), receptor_type='exc_spikes',
     synapse_type=p.StaticSynapse(weight=weight))
 
 my_full_neuron_pop.record(['v'])
-iaf_psc_exp_pop.record(['V_m'])
+iaf_psc_exp_pop.record(['I_kernel_exc__X__exc_spikes'])
 
 p.run(run_time)
 
 # get v for each example
 v_my_full_neuron_pop = my_full_neuron_pop.get_data('v')
-v_iaf_psc_exp_pop = iaf_psc_exp_pop.get_data('V_m')
+v_iaf_psc_exp_pop = iaf_psc_exp_pop.get_data('I_kernel_exc__X__exc_spikes')
 
 Figure(
     # pylint: disable=no-member
